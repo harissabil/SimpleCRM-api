@@ -1,4 +1,4 @@
-# Customer Management API
+# SimpleCRM API
 
 API backend dengan Python Flask untuk manajemen data pelanggan dengan operasi CRUD.
 
