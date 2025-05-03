@@ -1,7 +1,9 @@
-from marshmallow import Schema, fields, validate, ValidationError, validates
+from marshmallow import validate, ValidationError, validates
+
 from app import ma
 from app.models.customer import Customer
-import re
+from app.utils import validate_not_empty, validate_email, validate_phone_number
+from app.utils.validators import validate_name_no_numbers
 
 
 class CustomerSchema(ma.SQLAlchemySchema):
@@ -20,12 +22,26 @@ class CustomerSchema(ma.SQLAlchemySchema):
     created_at = ma.auto_field(dump_only=True)
     updated_at = ma.auto_field(dump_only=True)
 
+    @validates('name')
+    def validate_name(self, value):
+        error = validate_not_empty(value, 'Name')
+        if error:
+            raise ValidationError(error)
+        error = validate_name_no_numbers(value)
+        if error:
+            raise ValidationError(error)
+
+    @validates('email')
+    def validate_email_field(self, value):
+        error = validate_email(value)
+        if error:
+            raise ValidationError(error)
+
     @validates('phone_number')
-    def validate_phone_number(self, value):
-        # Simple phone number validation
-        if not re.match(r'^\+?[0-9\s-]{10,20}$', value):
-            raise ValidationError('Invalid phone number format')
-        return value
+    def validate_phone_number_field(self, value):
+        error = validate_phone_number(value)
+        if error:
+            raise ValidationError(error)
 
 
 customer_schema = CustomerSchema()
