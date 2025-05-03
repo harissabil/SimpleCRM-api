@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_marshmallow import Marshmallow
@@ -14,6 +15,9 @@ ma = Marshmallow()
 def create_app():
     app = Flask(__name__)
     app.config.from_object(get_config())
+
+    # Konfigurasi CORS untuk seluruh aplikasi
+    CORS(app, resources={r"/*": {"origins": "*"}})
 
     # Initialize extensions with app
     db.init_app(app)
